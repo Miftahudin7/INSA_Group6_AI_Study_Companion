@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 // Create the authentication context
 const AuthContext = createContext();
@@ -21,15 +22,28 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is already logged in (on app startup)
   useEffect(() => {
-    const checkAuthStatus = () => {
+    const checkAuthStatus = async () => {
       try {
         // Check for saved JWT token in localStorage
         const token = localStorage.getItem("brightroot_token");
         const userData = localStorage.getItem("brightroot_user");
 
         if (token && userData) {
-          // User is logged in, restore their session
-          setUser(JSON.parse(userData));
+          // Verify token is still valid by making a test request
+          try {
+            await axios.get('http://localhost:8000/api/users/profile/', {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            });
+            // Token is valid, restore user session
+            setUser(JSON.parse(userData));
+          } catch (error) {
+            // Token is invalid, clear storage
+            localStorage.removeItem("brightroot_token");
+            localStorage.removeItem("brightroot_refresh");
+            localStorage.removeItem("brightroot_user");
+          }
         }
       } catch (error) {
         console.error("Auth check failed:", error);
@@ -50,34 +64,44 @@ export const AuthProvider = ({ children }) => {
     setError(null);
 
     try {
-      // TODO: Replace with actual API call to Mihretab's Django backend
-      // const response = await axios.post('http://localhost:8000/api/auth/login', {
-      //   email,
-      //   password
-      // });
+      const response = await axios.post('http://localhost:8000/api/ai/login/', {
+        email,
+        password
+      });
 
-      // TEMPORARY: Mock successful login for development
-      const mockUser = {
-        id: 1,
-        email: email,
-        firstName: "Student",
-        lastName: "User",
+      const { access, refresh, user } = response.data;
+
+      const userData = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        firstName: user.username,
+        lastName: "",
         subjects: [],
         grades: {},
       };
 
-      const mockToken = "mock_jwt_token_123";
-
       // Save to localStorage for persistence
-      localStorage.setItem("brightroot_token", mockToken);
-      localStorage.setItem("brightroot_user", JSON.stringify(mockUser));
+      localStorage.setItem("brightroot_token", access);
+      localStorage.setItem("brightroot_refresh", refresh);
+      localStorage.setItem("brightroot_user", JSON.stringify(userData));
 
       // Update state
-      setUser(mockUser);
+      setUser(userData);
 
-      return { success: true, user: mockUser };
+      return { success: true, user: userData };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Login failed";
+      console.error("Login error:", error);
+      let errorMessage = "Login failed";
+      
+      if (error.response?.status === 401) {
+        errorMessage = "Invalid email or password";
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
@@ -89,6 +113,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     // Clear localStorage
     localStorage.removeItem("brightroot_token");
+    localStorage.removeItem("brightroot_refresh");
     localStorage.removeItem("brightroot_user");
 
     // Clear state
@@ -102,14 +127,34 @@ export const AuthProvider = ({ children }) => {
     setError(null);
 
     try {
-      // TODO: Replace with actual API call to backend
-      // const response = await axios.post('http://localhost:8000/api/auth/register', userData);
+      const response = await axios.post('http://localhost:8000/api/ai/signup/', {
+        username: userData.username,
+        email: userData.email,
+        password: userData.password
+      });
 
-      // For now, auto-login after registration
+      // Then login
       return await login(userData.email, userData.password);
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Registration failed";
+      console.error("Registration error:", error);
+      let errorMessage = "Registration failed";
+      
+      if (error.response?.data) {
+        // Handle Django validation errors
+        const errors = error.response.data;
+        if (errors.username) {
+          errorMessage = `Username: ${errors.username[0]}`;
+        } else if (errors.email) {
+          errorMessage = `Email: ${errors.email[0]}`;
+        } else if (errors.password) {
+          errorMessage = `Password: ${errors.password[0]}`;
+        } else if (errors.non_field_errors) {
+          errorMessage = errors.non_field_errors[0];
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {

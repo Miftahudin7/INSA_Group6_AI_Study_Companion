@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import UserSettings, StudyStreak
+from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,12 +28,4 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class UserSettingsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserSettings
-        fields = ['notifications_enabled', 'theme']
-
-class StudyStreakSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudyStreak
-        fields = ['streak_count', 'last_study_date']
+ 

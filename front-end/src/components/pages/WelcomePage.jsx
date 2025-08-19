@@ -10,64 +10,19 @@ const WelcomePage = ({ onSubjectSelected }) => {
 
   // Available subjects with Ethiopian curriculum focus
   const subjects = [
-    {
-      id: "english",
-      name: "English",
-      icon: "bi-book",
-      color: "#e74c3c",
-      description: "Literature, Grammar, and Writing Skills",
-      topics: [
-        "Grammar",
-        "Literature",
-        "Essay Writing",
-        "Reading Comprehension",
-      ],
-    },
-    {
-      id: "math",
-      name: "Mathematics",
-      icon: "bi-calculator",
-      color: "#3498db",
-      description: "Algebra, Geometry, and Problem Solving",
-      topics: ["Algebra", "Geometry", "Statistics", "Calculus"],
-    },
-    {
-      id: "physics",
-      name: "Physics",
-      icon: "bi-lightning",
-      color: "#9b59b6",
-      description: "Mechanics, Electricity, and Modern Physics",
-      topics: ["Mechanics", "Thermodynamics", "Electricity", "Optics"],
-    },
-    {
-      id: "chemistry",
-      name: "Chemistry",
-      icon: "bi-droplet",
-      color: "#2ecc71",
-      description: "Organic, Inorganic, and Physical Chemistry",
-      topics: [
-        "Organic Chemistry",
-        "Inorganic Chemistry",
-        "Physical Chemistry",
-        "Biochemistry",
-      ],
-    },
-    {
-      id: "biology",
-      name: "Biology",
-      icon: "bi-tree",
-      color: "#f39c12",
-      description: "Life Sciences and Human Biology",
-      topics: ["Cell Biology", "Genetics", "Ecology", "Human Biology"],
-    },
+    { id: "maths", name: "Maths", icon: "bi-calculator", color: "#3498db", description: "Algebra, Geometry, and Problem Solving", topics: ["Algebra", "Geometry", "Statistics", "Calculus"] },
+    { id: "physics", name: "Physics", icon: "bi-lightning", color: "#9b59b6", description: "Mechanics, Electricity, and Modern Physics", topics: ["Mechanics", "Thermodynamics", "Electricity", "Optics"] },
+    { id: "chemistry", name: "Chemistry", icon: "bi-droplet", color: "#2ecc71", description: "Organic, Inorganic, and Physical Chemistry", topics: ["Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry", "Biochemistry"] },
+    { id: "biology", name: "Biology", icon: "bi-tree", color: "#f39c12", description: "Life Sciences and Human Biology", topics: ["Cell Biology", "Genetics", "Ecology", "Human Biology"] },
+    { id: "english", name: "English", icon: "bi-book", color: "#e74c3c", description: "Literature, Grammar, and Writing Skills", topics: ["Grammar", "Literature", "Essay Writing", "Reading Comprehension"] },
   ];
 
   // Grade levels for Ethiopian curriculum
   const grades = [
-    { value: 9, label: "Grade 9", level: "Preparatory" },
-    { value: 10, label: "Grade 10", level: "Preparatory" },
-    { value: 11, label: "Grade 11", level: "Preparatory" },
-    { value: 12, label: "Grade 12", level: "Preparatory" },
+    { value: "Grade9", label: "Grade 9", level: "Preparatory" },
+    { value: "Grade10", label: "Grade 10", level: "Preparatory" },
+    { value: "Grade11", label: "Grade 11", level: "Preparatory" },
+    { value: "Grade12", label: "Grade 12", level: "Preparatory" },
   ];
 
   // Handle subject selection

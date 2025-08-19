@@ -4,8 +4,7 @@ from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .serializers import UserSerializer, UserSettingsSerializer, StudyStreakSerializer
-from .models import UserSettings
+from .serializers import UserSerializer
 
 User = get_user_model()
 
@@ -47,22 +46,4 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-class UserSettingsView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSettingsSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        settings, created = UserSettings.objects.get_or_create(user=self.request.user)
-        return settings
-
-class StudyStreakView(generics.RetrieveUpdateAPIView):
-    serializer_class = StudyStreakSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user.streak
-
-    def update(self, request, *args, **kwargs):
-        streak = self.get_object()
-        # logic to update the study streak activity
-        return super().update(request, *args, **kwargs)
+ 

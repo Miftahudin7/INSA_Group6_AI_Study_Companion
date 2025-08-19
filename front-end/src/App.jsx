@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import LoginPage from "./components/auth/LoginPage";
+import RegisterPage from "./components/auth/RegisterPage";
 import WelcomePage from "./components/pages/WelcomePage";
+import Dashboard from "./components/pages/Dashboard";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./App.css";
@@ -11,6 +13,7 @@ const AppContent = () => {
   const { user, isLoading } = useAuth();
   const [currentView, setCurrentView] = useState("welcome");
   const [selectedSubjectGrade, setSelectedSubjectGrade] = useState(null);
+  const [showRegistration, setShowRegistration] = useState(false);
 
   // Show loading screen while checking authentication
   if (isLoading) {
@@ -27,13 +30,26 @@ const AppContent = () => {
     );
   }
 
-  // Show login page if user is not authenticated
+  // Show login/registration page if user is not authenticated
   if (!user) {
+    if (showRegistration) {
+      return (
+        <RegisterPage
+          onRegisterSuccess={() => {
+            setCurrentView("welcome");
+            setShowRegistration(false);
+          }}
+          onSwitchToLogin={() => setShowRegistration(false)}
+        />
+      );
+    }
+    
     return (
       <LoginPage
         onLoginSuccess={() => {
           setCurrentView("welcome");
         }}
+        onSwitchToRegister={() => setShowRegistration(true)}
       />
     );
   }
@@ -52,40 +68,11 @@ const AppContent = () => {
         return <WelcomePage onSubjectSelected={handleSubjectSelected} />;
 
       case "dashboard":
-        // TODO: Implement Dashboard component
         return (
-          <div className="dashboard-placeholder">
-            <div className="container py-5">
-              <div className="text-center">
-                <h2 className="text-light mb-4">Study Dashboard</h2>
-                <div className="alert alert-info">
-                  <h5>Coming Soon!</h5>
-                  <p className="mb-0">
-                    You selected{" "}
-                    <strong>{selectedSubjectGrade?.subject?.name}</strong> for{" "}
-                    <strong>{selectedSubjectGrade?.grade?.label}</strong>
-                  </p>
-                  <hr />
-                  <p className="mb-2">
-                    <strong>Next features to implement:</strong>
-                  </p>
-                  <ul className="list-unstyled">
-                    <li>📄 Document Upload</li>
-                    <li>💬 AI Chat Interface</li>
-                    <li>📝 Quiz Generation</li>
-                    <li>📊 Progress Tracking</li>
-                  </ul>
-                  <button
-                    className="btn btn-primary mt-3"
-                    onClick={() => setCurrentView("welcome")}
-                  >
-                    <i className="bi bi-arrow-left me-2"></i>
-                    Back to Subject Selection
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Dashboard
+            selectedSubjectGrade={selectedSubjectGrade}
+            onBackToSubjects={() => setCurrentView("welcome")}
+          />
         );
 
       default:

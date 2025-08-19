@@ -12,7 +12,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import "./LoginPage.css";
 
-const LoginPage = ({ onLoginSuccess }) => {
+const LoginPage = ({ onLoginSuccess, onSwitchToRegister }) => {
   // Form state
   const [formData, setFormData] = useState({
     email: "",
@@ -198,6 +198,20 @@ const LoginPage = ({ onLoginSuccess }) => {
                     <div className="demo-credentials text-center">
                       <small className="text-muted">
                         Demo: any email + any password (6+ chars)
+                      </small>
+                    </div>
+
+                    {/* Switch to Registration */}
+                    <div className="text-center mt-3">
+                      <small className="text-muted">
+                        Don't have an account?{" "}
+                        <Button
+                          variant="link"
+                          className="p-0 text-success"
+                          onClick={onSwitchToRegister}
+                        >
+                          Sign Up
+                        </Button>
                       </small>
                     </div>
                   </Form>

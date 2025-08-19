@@ -16,16 +16,18 @@ from datetime import timedelta
 import os
 from supabase import create_client, Client
 
-load_dotenv()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from the correct path if exists
+env_path = os.path.join(BASE_DIR, 'app', '.env')
+if os.path.exists(env_path):
+    load_dotenv(env_path)
 
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 
-# Create a Supabase client
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Note: Supabase client will be created when needed, not at module level
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -36,7 +38,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 # remove the sensetive values(secret_key, database_credentials and add then in the .env file)
 
 # Application definition
@@ -84,7 +86,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'users.apps.UsersConfig',
-
+    'ai_services.apps.AiServicesConfig',
 ]
 
 MIDDLEWARE = [
